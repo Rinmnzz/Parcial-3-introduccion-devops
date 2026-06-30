@@ -40,9 +40,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           cd frontend
-          docker build -t $ECR_REGISTRY/${ECR_REPO_FRONTEND}:${IMAGE_TAG} -t $ECR_REGISTRY/${ECR_REPO_FRONTEND}:eks-v1 .
+          docker build -t $ECR_REGISTRY/${ECR_REPO_FRONTEND}:${IMAGE_TAG} .
           docker push $ECR_REGISTRY/${ECR_REPO_FRONTEND}:${IMAGE_TAG}
-          docker push $ECR_REGISTRY/${ECR_REPO_FRONTEND}:eks-v1
 
       # ---------- BACKEND ----------
       - name: Build & push BACKEND
@@ -50,9 +49,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           cd backend
-          docker build -t $ECR_REGISTRY/${ECR_REPO_BACKEND}:${IMAGE_TAG} -t $ECR_REGISTRY/${ECR_REPO_BACKEND}:eks-v1 .
+          docker build -t $ECR_REGISTRY/${ECR_REPO_BACKEND}:${IMAGE_TAG} .
           docker push $ECR_REGISTRY/${ECR_REPO_BACKEND}:${IMAGE_TAG}
-          docker push $ECR_REGISTRY/${ECR_REPO_BACKEND}:eks-v1
 
       # ---------- DB ----------
       - name: Build & push DB
@@ -60,9 +58,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           cd db
-          docker build -t $ECR_REGISTRY/${ECR_REPO_DB}:${IMAGE_TAG} -t $ECR_REGISTRY/${ECR_REPO_DB}:eks-v1 .
+          docker build -t $ECR_REGISTRY/${ECR_REPO_DB}:${IMAGE_TAG} .
           docker push $ECR_REGISTRY/${ECR_REPO_DB}:${IMAGE_TAG}
-          docker push $ECR_REGISTRY/${ECR_REPO_DB}:eks-v1
 
       # ---------- Instalar kubectl ----------
       - name: Instalar kubectl
