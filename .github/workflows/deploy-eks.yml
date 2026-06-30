@@ -26,7 +26,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          EKS_NAMESPACE: ${{ secrets.EKS_NAMESPACE }}
 
       - name: Login a Amazon ECR
         id: login-ecr
@@ -88,12 +87,7 @@ jobs:
           kubectl apply -f k8s/mysql-secret.yaml -n $EKS_NAMESPACE
           kubectl apply -f k8s/mysql-deployment.yaml -n $EKS_NAMESPACE
           kubectl apply -f k8s/mysql-service.yaml -n $EKS_NAMESPACE
-      - name: Inspeccionar problemas de Pods
-        run: |
-               kubectl get nodes -n $EKS_NAMESPACE
-               kubectl get pods -n $EKS_NAMESPACE
-               kubectl describe pods -l app=***-backend -n $EKS_NAMESPACE || true
-
+      
       # ---------- Actualizar BACKEND en EKS ----------
       - name: Actualizar BACKEND en EKS
         env:
@@ -105,6 +99,31 @@ jobs:
           kubectl set image deployment/tienda-backend \
             backend=$ECR_REGISTRY/${ECR_REPO_BACKEND}:${IMAGE_TAG} \
             -n $EKS_NAMESPACE
+
+      # ---------- 🔍 NUEVO PASO: INSPECTOR DE ERRORES ----------
+      - name: 🔍 Inspeccionar por qué no suben las réplicas
+        env:
+          EKS_NAMESPACE: ${{ secrets.EKS_NAMESPACE }}
+        run: |
+          echo "========================================="
+          echo "🚀 1. REVISANDO COMPUTARES (NODOS)"
+          echo "========================================="
+          kubectl get nodes
+          
+          echo "========================================="
+          echo "📦 2. REVISANDO ESTADO DE TODOS LOS PODS"
+          echo "========================================="
+          kubectl get pods -n $EKS_NAMESPACE
+          
+          echo "========================================="
+          echo "❌ 3. RADIOGRAFÍA DETALLADA DE LOS ERRORES"
+          echo "========================================="
+          kubectl describe pods -n $EKS_NAMESPACE
+
+      - name: Esperar Rollout del Backend
+        env:
+          EKS_NAMESPACE: ${{ secrets.EKS_NAMESPACE }}
+        run: |
           kubectl rollout status deployment/tienda-backend -n $EKS_NAMESPACE
 
       # ---------- Actualizar FRONTEND en EKS ----------
