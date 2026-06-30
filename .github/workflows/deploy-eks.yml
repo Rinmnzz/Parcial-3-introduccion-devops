@@ -100,25 +100,7 @@ jobs:
             backend=$ECR_REGISTRY/${ECR_REPO_BACKEND}:${IMAGE_TAG} \
             -n $EKS_NAMESPACE
 
-      # ---------- 🔍 NUEVO PASO: INSPECTOR DE ERRORES ----------
-      - name: 🔍 Inspeccionar por qué no suben las réplicas
-        env:
-          EKS_NAMESPACE: ${{ secrets.EKS_NAMESPACE }}
-        run: |
-          echo "========================================="
-          echo "🚀 1. REVISANDO COMPUTARES (NODOS)"
-          echo "========================================="
-          kubectl get nodes
-          
-          echo "========================================="
-          echo "📦 2. REVISANDO ESTADO DE TODOS LOS PODS"
-          echo "========================================="
-          kubectl get pods -n $EKS_NAMESPACE
-          
-          echo "========================================="
-          echo "❌ 3. RADIOGRAFÍA DETALLADA DE LOS ERRORES"
-          echo "========================================="
-          kubectl describe pods -n $EKS_NAMESPACE
+      
 
       - name: Esperar Rollout del Backend
         env:
